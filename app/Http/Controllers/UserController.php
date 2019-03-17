@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\JwtAuth;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -92,7 +93,7 @@ class UserController extends Controller
                     'name' => $params_array['name'],
                     'surname' => $params_array['surname'],
                     'email' => $params_array['email'],
-                    'password' => password_hash($params_array['password'], PASSWORD_BCRYPT),
+                    'password' => hash('sha256', $params_array['password']),
                     'role' => 'ROLE_user'
                 ]);
 
@@ -112,5 +113,15 @@ class UserController extends Controller
 
         }
         return response()->json($data, $data['code']);
+    }
+
+    public function login(Request $request)
+    {
+    $jwtAuth=new JwtAuth();
+
+    $email = 'dominguezma@gmail.com';
+    $password=hash('sha256', 'qwerty');
+
+    return response()->json($jwtAuth->signup($email,$password,true),200);
     }
 }
