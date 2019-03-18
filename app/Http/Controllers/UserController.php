@@ -95,65 +95,67 @@ class UserController extends Controller
     {
         $token = $request->header('Autorization');
         $jwtAuth = new JwtAuth();
-        $checkToken = $jwtAuth->checkToken($token);
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
 
-        if ($checkToken) {
-            $json = $request->input('json', null);
-            $params_array = json_decode($json, true);
+        if (!empty($params_array)) {
 
-            if ($checkToken && !empty($params_array)) {
+            $user = $jwtAuth->checkToken($token, true);
 
-                $user = $jwtAuth->checkToken($token, true);
-
-                $validate = \Validator::make($params_array, [
-                    'name' => 'required|alpha',
-                    'surname' => 'required|alpha',
-                    'email' => 'required|email'
-                ]);
-                if ($validate->fails()) {
-                    $data = array(
-                        'status' => 'error',
-                        'code' => 400,
-                        'message' => 'Campos incorrecto',
-                        'errors' => $validate->errors()
-                    );
-                } else {
-
-                    unset($params_array['id']);
-                    unset($params_array['role']);
-                    unset($params_array['password']);
-                    unset($params_array['created_at']);
-                    unset($params_array['updated_at']);
-                    unset($params_array['remember_token']);
-
-
-                    $user_update = User::where('id', $user->sub)->update($params_array);
-
-                    $data = array(
-                        'status' => 'success',
-                        'code' => 200,
-                        'message' => 'El usuario se ha actualizado con exito',
-                        'user' => $user
-                    );
-                }
-
-
-            }
-            else {
+            $validate = \Validator::make($params_array, [
+                'name' => 'required|alpha',
+                'surname' => 'required|alpha',
+                'email' => 'required|email'
+            ]);
+            if ($validate->fails()) {
                 $data = array(
                     'status' => 'error',
                     'code' => 400,
-                    'message' => 'Falta informacion'
+                    'message' => 'Campos incorrecto',
+                    'errors' => $validate->errors()
+                );
+            } else {
+
+                unset($params_array['id']);
+                unset($params_array['role']);
+                unset($params_array['password']);
+                unset($params_array['created_at']);
+                unset($params_array['updated_at']);
+                unset($params_array['remember_token']);
+
+
+                User::where('id', $user->sub)->update($params_array);
+
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'El usuario se ha actualizado con exito',
+                    'user' => $user
                 );
             }
+
 
         } else {
             $data = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Token incorrecto'
+                'message' => 'Falta informacion'
             );
         }
+
         return response()->json($data, $data['code']);
     }
+
+    public function upload(Request $request)
+    {
+        $data = array(
+            'status' => 'error',
+            'code' => 400,
+            'message' => 'Falta informacion'
+        );
+
+        return response()->json($data, $data['code']);
+
+    }
+
 }
