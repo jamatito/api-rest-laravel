@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name','surname','description', 'email', 'password',
+        'name', 'surname', 'role', 'description', 'email', 'password',
     ];
 
     /**
@@ -29,7 +29,8 @@ class User extends Authenticatable
     ];
 
 
-    public function posts(){
+    public function posts()
+    {
         return $this->hasMany('App\Post');
     }
 }

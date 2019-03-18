@@ -8,60 +8,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return User::all();//
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 
     public function register(Request $request)
     {
@@ -92,9 +38,9 @@ class UserController extends Controller
                 User::create([
                     'name' => $params_array['name'],
                     'surname' => $params_array['surname'],
+                    'role' => "ROLE_user",
                     'email' => $params_array['email'],
-                    'password' => hash('sha256', $params_array['password']),
-                    'role' => 'ROLE_user'
+                    'password' => hash('sha256', $params_array['password'])
                 ]);
 
 
@@ -117,11 +63,97 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-    $jwtAuth=new JwtAuth();
+        $jwtAuth = new JwtAuth();
 
-    $email = 'dominguezma@gmail.com';
-    $password=hash('sha256', 'qwerty');
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
 
-    return response()->json($jwtAuth->signup($email,$password,true),200);
+        $validate = \Validator::make($params_array, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Login incorrecto',
+                'errors' => $validate->errors()
+            );
+        } else {
+            $password = hash('sha256', $params_array['password']);
+            $data = $jwtAuth->signup($params_array['email'], $password);
+            if (!empty($params_array['gettoken'])) {
+                $data = $jwtAuth->signup($params_array['email'], $password, true);
+            }
+
+        }
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $request)
+    {
+        $token = $request->header('Autorization');
+        $jwtAuth = new JwtAuth();
+        $checkToken = $jwtAuth->checkToken($token);
+
+        if ($checkToken) {
+            $json = $request->input('json', null);
+            $params_array = json_decode($json, true);
+
+            if ($checkToken && !empty($params_array)) {
+
+                $user = $jwtAuth->checkToken($token, true);
+
+                $validate = \Validator::make($params_array, [
+                    'name' => 'required|alpha',
+                    'surname' => 'required|alpha',
+                    'email' => 'required|email'
+                ]);
+                if ($validate->fails()) {
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 400,
+                        'message' => 'Campos incorrecto',
+                        'errors' => $validate->errors()
+                    );
+                } else {
+
+                    unset($params_array['id']);
+                    unset($params_array['role']);
+                    unset($params_array['password']);
+                    unset($params_array['created_at']);
+                    unset($params_array['updated_at']);
+                    unset($params_array['remember_token']);
+
+
+                    $user_update = User::where('id', $user->sub)->update($params_array);
+
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'El usuario se ha actualizado con exito',
+                        'user' => $user
+                    );
+                }
+
+
+            }
+            else {
+                $data = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Falta informacion'
+                );
+            }
+
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Token incorrecto'
+            );
+        }
+        return response()->json($data, $data['code']);
     }
 }

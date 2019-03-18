@@ -21,3 +21,4 @@ Route::apiResource('users','UserController');
 
 Route::post('/users/register', 'UserController@register');
 Route::post('/users/login', 'UserController@login');
+Route::put('/users/update', 'UserController@update');
