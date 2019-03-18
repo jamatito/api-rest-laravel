@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\JwtAuth;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -148,12 +149,34 @@ class UserController extends Controller
 
     public function upload(Request $request)
     {
-        $data = array(
-            'status' => 'error',
-            'code' => 400,
-            'message' => 'Falta informacion'
-        );
+        /*        https://stackoverflow.com/questions/38914976/laravel-5-2-upload-file-call-to-a-member-function-getclientoriginalname-on
+                if ($request->hasFile('image')) {
+                    $data = $request->input('image');
+                    $photo = $request->file('image')->getClientOriginalName();
+                    $destination = public_path() . '/uploads/';
+                    $request->file('image')->move($destination, $photo);
+                    $data['fotodosen'] = $photo;
+                    Dosen::create($data);*/
 
+        $image = $request->file('file0');
+
+        if ($image) {
+            $image_name = time() . $image->getClientOriginalName();
+            Storage::disk('users')->put($image_name, \File::get($image));
+
+            $data = array(
+                'status' => 'success',
+                'code' => 200,
+                'image' => $image_name
+            );
+        } else {
+
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al subir la imagen'
+            );
+        }
         return response()->json($data, $data['code']);
 
     }
