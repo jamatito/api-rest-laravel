@@ -26,3 +26,5 @@ Route::get('/users/getimage/{filename}', 'UserController@getImage');
 Route::get('/users/detail/{id}', 'UserController@detail');
 
 Route::apiResource('category','CategoryController');
+
+Route::apiResource('post','PostController');

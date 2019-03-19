@@ -103,14 +103,14 @@ class CategoryController extends Controller
                 );
             } else {
 
-                unset($params_array['id']);;
+                unset($params_array['id']);
                 unset($params_array['created_at']);
 
-                Category::where('id', $id)->update($params_array);
+                $category=Category::where('id', $id)->updateOrCreate($params_array);
                 $data = array(
                     'status' => 'success',
                     'code' => 200,
-                    'category' => $params_array
+                    'category' => $category
                 );
             }
         } else {
