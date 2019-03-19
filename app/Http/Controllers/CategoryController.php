@@ -2,60 +2,128 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    public function __construct()
+    {
+        $this->middleware('api.auth', ['except' => ['index', 'show']]);
+    }
+
     public function index()
     {
-        //
+        $categories = Category::all();
+        return response()->json([
+            'status' => 'success',
+            'code' => 200,
+            'categories' => $categories
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
+
+        if (!empty($params_array)) {
+            $params_array = array_map('trim', $params_array);
+            //limpiamos los datos
+            $validate = \Validator::make($params_array, [
+                'name' => 'required'
+            ]);
+            if ($validate->fails()) {
+                $data = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Campos incorrecto',
+                    'errors' => $validate->errors()
+                );
+            } else {
+                Category::create([
+                    'name' => $params_array['name']
+                ]);
+
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Categoria creada con exito'
+                );
+            }
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Falta informacion'
+            );
+        }
+        return response()->json($data, $data['code']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
-        //
+        $category = Category::find($id);
+
+        if (is_object($category)) {
+            $data = array(
+                'status' => 'success',
+                'code' => 200,
+                'category' => $category
+            );
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'La categoria no existe'
+            );
+        }
+        return response()->json($data, $data['code']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
+
+        if (!empty($params_array)) {
+            $params_array = array_map('trim', $params_array);
+            //limpiamos los datos
+            $validate = \Validator::make($params_array, [
+                'name' => 'required'
+            ]);
+            if ($validate->fails()) {
+                $data = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Campos incorrecto',
+                    'errors' => $validate->errors()
+                );
+            } else {
+
+                unset($params_array['id']);;
+                unset($params_array['created_at']);
+
+                Category::where('id', $id)->update($params_array);
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'category' => $params_array
+                );
+            }
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'No has enviado ninguna categoria.'
+            );
+        }
+        return response()->json($data, $data['code']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy($id)
     {
         //

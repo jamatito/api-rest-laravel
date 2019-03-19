@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Helpers\JwtAuth;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+
 
 class UserController extends Controller
 {
@@ -20,7 +22,7 @@ class UserController extends Controller
             $params_array = array_map('trim', $params_array);
             //limpiamos los datos
             $validate = \Validator::make($params_array, [
-                'name' => 'required|alpha',
+                'name' => 'required',
                 'surname' => 'required|alpha',
                 'email' => 'required|email|unique:users',
                 //unique busca en la bd si ya existe uno igual
@@ -104,7 +106,7 @@ class UserController extends Controller
             $user = $jwtAuth->checkToken($token, true);
 
             $validate = \Validator::make($params_array, [
-                'name' => 'required|alpha',
+                'name' => 'required',
                 'surname' => 'required|alpha',
                 'email' => 'required|email'
             ]);
@@ -121,7 +123,6 @@ class UserController extends Controller
                 unset($params_array['role']);
                 unset($params_array['password']);
                 unset($params_array['created_at']);
-                unset($params_array['updated_at']);
                 unset($params_array['remember_token']);
 
 
@@ -149,18 +150,22 @@ class UserController extends Controller
 
     public function upload(Request $request)
     {
-        /*        https://stackoverflow.com/questions/38914976/laravel-5-2-upload-file-call-to-a-member-function-getclientoriginalname-on
-                if ($request->hasFile('image')) {
-                    $data = $request->input('image');
-                    $photo = $request->file('image')->getClientOriginalName();
-                    $destination = public_path() . '/uploads/';
-                    $request->file('image')->move($destination, $photo);
-                    $data['fotodosen'] = $photo;
-                    Dosen::create($data);*/
 
         $image = $request->file('file0');
 
-        if ($image) {
+        $validate = \Validator::make($request->all(), [
+            'file0' => 'required|image|mimes:jpg,png,jpeg'
+        ]);
+
+
+        if (!$image || $validate->fails()) {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al subir la imagen'
+            );
+        } else {
+
             $image_name = time() . $image->getClientOriginalName();
             Storage::disk('users')->put($image_name, \File::get($image));
 
@@ -169,16 +174,46 @@ class UserController extends Controller
                 'code' => 200,
                 'image' => $image_name
             );
-        } else {
-
-            $data = array(
-                'status' => 'error',
-                'code' => 400,
-                'message' => 'Error al subir la imagen'
-            );
         }
         return response()->json($data, $data['code']);
 
     }
+
+    public function getImage($filename)
+    {
+        $isset = Storage::disk('users')->exists($filename);
+        if ($isset) {
+            $file = Storage::disk('users')->get($filename);
+            return new Response($file, 200);
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'El fichero no existe'
+            );
+            return response()->json($data, $data['code']);
+        }
+    }
+
+    public function detail($id)
+    {
+        $user = User::find($id);
+        if (is_object($user)) {
+            $data = array(
+                'status' => 'success',
+                'code' => 200,
+                'message' => 'El usuario se ha actualizado con exito',
+                'user' => $user
+            );
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 404,
+                'message' => 'Usuario no encontrado'
+            );
+        }
+        return response()->json($data, $data['code']);
+    }
+
 
 }
