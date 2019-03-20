@@ -19,21 +19,22 @@ use App\Http\Middleware\ApiAuthMiddleware;
 
 //Route::apiResource('users','UserController');
 
-Route::post('/user/register', 'UserController@register');
-Route::post('/user/login', 'UserController@login');
-Route::put('/user/update', 'UserController@update')->middleware(ApiAuthMiddleware::class);
-Route::post('/user/upload', 'UserController@upload')->middleware(ApiAuthMiddleware::class);
-Route::get('/user/getimage/{filename}', 'UserController@getImage');
-Route::get('/user/detail/{id}', 'UserController@detail');
 
-Route::apiResource('category', 'CategoryController');
+Route::group(['middleware' => 'cors'], function () {
 
-Route::apiResource('post', 'PostController');
-Route::post('/post/upload', 'PostController@upload');
-Route::get('/post/getimage/{filename}', 'PostController@getImage');
+    Route::post('/user/login', 'UserController@login');
+    Route::put('/user/update', 'UserController@update')->middleware(ApiAuthMiddleware::class);
+    Route::post('/user/upload', 'UserController@upload')->middleware(ApiAuthMiddleware::class);
+    Route::get('/user/getimage/{filename}', 'UserController@getImage');
+    Route::get('/user/detail/{id}', 'UserController@detail');
 
-Route::get('/post/category/{id}', 'PostController@getPostsByCategory');
-Route::get('/post/user/{id}', 'PostController@getPostsByUser');
+    Route::apiResource('category', 'CategoryController');
 
+    Route::apiResource('post', 'PostController');
+    Route::post('/post/upload', 'PostController@upload');
+    Route::get('/post/getimage/{filename}', 'PostController@getImage');
 
+    Route::get('/post/category/{id}', 'PostController@getPostsByCategory');
+    Route::get('/post/user/{id}', 'PostController@getPostsByUser');
 
+});
