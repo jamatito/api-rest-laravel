@@ -96,7 +96,7 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $token = $request->header('Autorization');
+        $token = $request->header('Autorization',null);
         $jwtAuth = new JwtAuth();
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -150,14 +150,10 @@ class UserController extends Controller
 
     public function upload(Request $request)
     {
-
         $image = $request->file('file0');
-
         $validate = \Validator::make($request->all(), [
             'file0' => 'required|image|mimes:jpg,png,jpeg'
         ]);
-
-
         if (!$image || $validate->fails()) {
             $data = array(
                 'status' => 'error',
@@ -165,7 +161,6 @@ class UserController extends Controller
                 'message' => 'Error al subir la imagen'
             );
         } else {
-
             $image_name = time() . $image->getClientOriginalName();
             Storage::disk('users')->put($image_name, \File::get($image));
 
@@ -176,7 +171,6 @@ class UserController extends Controller
             );
         }
         return response()->json($data, $data['code']);
-
     }
 
     public function getImage($filename)

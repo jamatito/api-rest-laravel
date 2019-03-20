@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ApiAuthMiddleware;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,13 +19,21 @@ use App\Http\Middleware\ApiAuthMiddleware;
 
 //Route::apiResource('users','UserController');
 
-Route::post('/users/register', 'UserController@register');
-Route::post('/users/login', 'UserController@login');
-Route::put('/users/update', 'UserController@update')->middleware(ApiAuthMiddleware::class);
-Route::post('/users/upload', 'UserController@upload')->middleware(ApiAuthMiddleware::class);
-Route::get('/users/getimage/{filename}', 'UserController@getImage');
-Route::get('/users/detail/{id}', 'UserController@detail');
+Route::post('/user/register', 'UserController@register');
+Route::post('/user/login', 'UserController@login');
+Route::put('/user/update', 'UserController@update')->middleware(ApiAuthMiddleware::class);
+Route::post('/user/upload', 'UserController@upload')->middleware(ApiAuthMiddleware::class);
+Route::get('/user/getimage/{filename}', 'UserController@getImage');
+Route::get('/user/detail/{id}', 'UserController@detail');
 
-Route::apiResource('category','CategoryController');
+Route::apiResource('category', 'CategoryController');
 
-Route::apiResource('post','PostController');
+Route::apiResource('post', 'PostController');
+Route::post('/post/upload', 'PostController@upload');
+Route::get('/post/getimage/{filename}', 'PostController@getImage');
+
+Route::get('/post/category/{id}', 'PostController@getPostsByCategory');
+Route::get('/post/user/{id}', 'PostController@getPostsByUser');
+
+
+
