@@ -96,7 +96,7 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $token = $request->header('Autorization',null);
+        $token = $request->header('Authorization',null);
         $jwtAuth = new JwtAuth();
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
