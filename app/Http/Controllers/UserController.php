@@ -126,7 +126,7 @@ class UserController extends Controller
                 unset($params_array['remember_token']);
 
 
-                $user1=User::where('id', $user->sub)->updateOrCreate($params_array);
+                $user1=User::where('id', $user->sub)->update($params_array);
 
                 $data = array(
                     'status' => 'success',
