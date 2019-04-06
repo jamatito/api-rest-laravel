@@ -96,7 +96,7 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $token = $request->header('Authorization',null);
+        $token = $request->header('Authorization', null);
         $jwtAuth = new JwtAuth();
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -119,19 +119,32 @@ class UserController extends Controller
                 );
             } else {
 
-                unset($params_array['id']);
-                unset($params_array['role']);
-                unset($params_array['password']);
-                unset($params_array['created_at']);
-                unset($params_array['remember_token']);
+                $user1 = User::where('id', $user->sub)->first();
 
+                if (!empty($user1) && is_object($user1)) {
+                    unset($params_array['id']);
+                    unset($params_array['role']);
+                    unset($params_array['password']);
+                    unset($params_array['created_at']);
+                    unset($params_array['remember_token']);
 
-                $user1=User::where('id', $user->sub)->update($params_array);
+                    $user1->update($params_array);
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'user' => $user1
+                    );
+                } else {
 
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 400,
+                        'message' => 'No existe el usuario.'
+                    );
+                }
                 $data = array(
                     'status' => 'success',
                     'code' => 200,
-                    'message' => 'El usuario se ha actualizado con exito',
                     'user' => $user1
                 );
             }
