@@ -17,11 +17,11 @@ class PostController extends Controller
 
     public function index()
     {
-        $post = Post::all()->load('category');
+        $posts = Post::all()->load('category');
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'post' => $post
+            'posts' => $posts
         ]);
     }
 
