@@ -20,6 +20,7 @@ class JwtAuth
 
     public function signup($email, $password, $getToken = null)
     {
+
         $user = User::where([
             'email' => $email,
             'password' => $password

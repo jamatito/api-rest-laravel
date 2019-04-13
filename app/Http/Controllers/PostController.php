@@ -77,7 +77,8 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = Post::find($id)->load('category');
+        $post = Post::find($id)->load('category')
+            ->load('user');
 
         if (is_object($post)) {
             $data = array(
@@ -103,8 +104,7 @@ class PostController extends Controller
         $params_array = json_decode($json, true);
 
         if (!empty($params_array)) {
-            $params_array = array_map('trim', $params_array);
-            //limpiamos los datos
+            
             $validate = \Validator::make($params_array, [
                 'title' => 'required',
                 'content' => 'required',
@@ -190,7 +190,7 @@ class PostController extends Controller
     private function getJwtToken(Request $request)
     {
         $jwtAuth = new JwtAuth();
-        $token = $request->header('Autorization', null);
+        $token = $request->header('Authorization', null);
         $user = $jwtAuth->checkToken($token, true);
 
         return $user;
