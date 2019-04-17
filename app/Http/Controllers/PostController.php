@@ -12,7 +12,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('api.auth', ['except' => ['index', 'show', 'getImage', 'getPostsByCategory', 'getPostsByUser']]);
+        $this->middleware('api.auth', ['except' => ['index', 'show', 'getImage', 'getPostsByCategory', 'getLastPosts', 'getPostsByUser']]);
     }
 
     public function index()
@@ -259,6 +259,16 @@ class PostController extends Controller
             'status' => 'success',
             'posts' => $post
         ], 200);
+    }
+
+    public function getLastPosts()
+    {
+        $posts = Post::orderBy('created_at', 'desc')->take(3)->get()->load('category');
+        return response()->json([
+            'status' => 'success',
+            'code' => 200,
+            'posts' => $posts
+        ]);
     }
 }
 

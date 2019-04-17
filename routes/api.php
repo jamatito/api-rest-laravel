@@ -37,4 +37,8 @@ Route::group(['middleware' => 'cors'], function () {
     Route::get('/post/category/{id}', 'PostController@getPostsByCategory');
     Route::get('/post/user/{id}', 'PostController@getPostsByUser');
 
+    Route::get('/posts/getlastposts', 'PostController@getLastPosts');
+
+
+
 });
