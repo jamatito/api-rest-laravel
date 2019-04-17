@@ -36,6 +36,7 @@ class PostController extends Controller
             //limpiamos los datos
             $validate = \Validator::make($params_array, [
                 'title' => 'required',
+                'description' => 'required',
                 'content' => 'required',
                 'category_id' => 'required',
                 'image' => 'required'
@@ -53,6 +54,7 @@ class PostController extends Controller
                     'user_id' => $params_array['user_id'],
                     'category_id' => $params_array['category_id'],
                     'title' => $params_array['title'],
+                    'description' => $params_array['description'],
                     'content' => $params_array['content'],
                     'image' => $params_array['image'],
 
@@ -104,9 +106,10 @@ class PostController extends Controller
         $params_array = json_decode($json, true);
 
         if (!empty($params_array)) {
-            
+
             $validate = \Validator::make($params_array, [
                 'title' => 'required',
+                'description' => 'required',
                 'content' => 'required',
                 'category_id' => 'required'
             ]);
