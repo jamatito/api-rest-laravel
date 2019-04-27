@@ -39,6 +39,9 @@ Route::group(['middleware' => 'cors'], function () {
 
     Route::get('/posts/getlastposts', 'PostController@getLastPosts');
 
+    Route::apiResource('comment', 'CommentController');
 
+    Route::get('/comment/post/{id}', 'CommentController@getCommentsByPost');
+    Route::get('/comment/user/{id}', 'CommentController@getCommentsByUser');
 
 });
