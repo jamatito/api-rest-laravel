@@ -189,7 +189,7 @@ class CommentController extends Controller
 
     public function getCommentsByPost($id)
     {
-        $comments = Comment::where('post_id', $id)->get();
+        $comments = Comment::where('post_id', $id)->get()->load('user');
         return \response()->json([
             'status' => 'success',
             'comments' => $comments
