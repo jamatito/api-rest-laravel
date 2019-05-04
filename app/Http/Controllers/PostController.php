@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JwtAuth;
+use App\Helpers\EmailHelper;
 use App\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -28,6 +29,7 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        $ehelper = new EmailHelper();
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
 
@@ -59,6 +61,8 @@ class PostController extends Controller
                     'image' => $params_array['image'],
 
                 ]);
+
+                 $ehelper->newPost($params_array['title'],$params_array['description']);
 
                 $data = array(
                     'status' => 'success',
