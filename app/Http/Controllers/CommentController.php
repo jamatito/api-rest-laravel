@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\JwtAuth;
 use App\Comment;
 use Illuminate\Http\Request;
+use App\Helpers\EmailHelper;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,6 +29,7 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
+        $ehelper = new EmailHelper();
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
 
@@ -55,6 +57,8 @@ class CommentController extends Controller
                     'post_id' => $params_array['post_id'],
                     'approved' => $params_array['approved']
                 ]);
+
+                $ehelper->newPost("JPA en laravel","fdfdfs");
 
                 $data = array(
                     'status' => 'success',

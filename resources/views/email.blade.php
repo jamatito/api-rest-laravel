@@ -1,2 +1,2 @@
-<h2>Nombre: {{$name}}</h2>
-<h2>Mensaje: {{$msg}}</h2>
+<h2>No te pierdas nuestra nueva entrada {{$titulo}}</h2>
+<p>Descripción: {{$descripcion}}</p>

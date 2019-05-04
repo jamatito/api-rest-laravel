@@ -1,3 +1,4 @@
+<!--test.blade.php-->
 <h2>Formulario de contacto</h2>
 <form action={{route('contact')}} method="POST">
     {{ csrf_field() }}
