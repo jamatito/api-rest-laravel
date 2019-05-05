@@ -58,7 +58,7 @@ class CommentController extends Controller
                     'approved' => $params_array['approved']
                 ]);
 
-               // $ehelper->newPost("JPA en laravel","fdfdfs");
+                $ehelper->postCreator($params_array['user_id'],$params_array['post_id'],$params_array['content']);
 
                 $data = array(
                     'status' => 'success',

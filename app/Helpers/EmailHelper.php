@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Post;
 use App\User;
 use Mail;
 
@@ -41,6 +42,20 @@ class EmailHelper
                 $msj->to($for);
             });
         }
+        return redirect()->back();
+    }
+
+    public function postCreator($userId, $postId,$content){
+        $user = User::find($userId);
+        $post = Post::find($postId)->load('user');
+        $subject = "Un usuario ha comentado en tu entrada: ".$post->title;
+        $datos = ['usuario' => $post->user->name, 'comment' =>$content, 'entrada'=>$post->title];
+        $for = $user->email;
+            Mail::send('postCreator',$datos, function($msj) use($subject,$for){
+                $msj->from("jamatitodam218@iescastelar.com","Blog de desarrollo web");
+                $msj->subject($subject);
+                $msj->to($for);
+            });
         return redirect()->back();
     }
 
