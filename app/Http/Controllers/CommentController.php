@@ -59,6 +59,7 @@ class CommentController extends Controller
                 ]);
 
                 $ehelper->postCreator($params_array['user_id'],$params_array['post_id'],$params_array['content']);
+                $ehelper->postAnidate($params_array['user_id'],$params_array['post_id'],$params_array['content']);
 
                 $data = array(
                     'status' => 'success',
