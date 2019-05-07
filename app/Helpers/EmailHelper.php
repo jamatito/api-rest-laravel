@@ -49,20 +49,22 @@ class EmailHelper
         return redirect()->back();
     }
 
-    public function postAnidate($userId,$postId, $content)
+    public function postAnidate($userId, $postId, $content)
     {
         $user = User::find($userId);
-        $users = Comment::where('post_id', $postId)->groupBy('user_id')->get()->load('user');
+        $comments = Comment::where('post_id', $postId)->groupBy('user_id')->get()->load('user');
         $post = Post::find($postId)->load('user');
         $subject = "Un usuario ha respondido a tu comentario en la entrada: " . $post->title;
         $datos = ['usuario' => $user->name, 'comment' => $content, 'entrada' => $post->title];
-        foreach ($users as $user) {
-            $for = $user->user->email;
-            Mail::send('commentAnidate', $datos, function ($msj) use ($subject, $for) {
-                $msj->from("jamatitodam218@iescastelar.com", "Blog de desarrollo web");
-                $msj->subject($subject);
-                $msj->to($for);
-            });
+        foreach ($comments as $comment) {
+            if ($comment->user->id != $user->id && $post->user->id != $comment->user->id) {
+                $for = $comment->user->email;
+                Mail::send('commentAnidate', $datos, function ($msj) use ($subject, $for) {
+                    $msj->from("jamatitodam218@iescastelar.com", "Blog de desarrollo web");
+                    $msj->subject($subject);
+                    $msj->to($for);
+                });
+            }
         }
         return redirect()->back();
     }
