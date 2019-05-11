@@ -34,12 +34,12 @@ class EmailHelper
         return redirect()->back();
     }
 
-    public function postCreator($userId, $postId, $content)
+    public function postCreator($userId, $postId, $content, $name)
     {
         $user = User::find($userId);
         $post = Post::find($postId)->load('user');
         $subject = "Un usuario ha comentado en tu entrada: " . $post->title;
-        $datos = ['usuario' => $user->name, 'comment' => $content, 'entrada' => $post->title];
+        $datos = ['usuario' => $name, 'comment' => $content, 'entrada' => $post->title];
         $for = $post->user->email;
         Mail::send('postCreator', $datos, function ($msj) use ($subject, $for) {
             $msj->from("jamatitodam218@iescastelar.com", "Blog de desarrollo web");
@@ -49,13 +49,13 @@ class EmailHelper
         return redirect()->back();
     }
 
-    public function postAnidate($userId, $postId, $content)
+    public function postAnidate($userId, $postId, $content, $name)
     {
         $user = User::find($userId);
         $comments = Comment::where('post_id', $postId)->groupBy('user_id')->get()->load('user');
         $post = Post::find($postId)->load('user');
         $subject = "Un usuario ha respondido a tu comentario en la entrada: " . $post->title;
-        $datos = ['usuario' => $user->name, 'comment' => $content, 'entrada' => $post->title];
+        $datos = ['usuario' => $name, 'comment' => $content, 'entrada' => $post->title];
         foreach ($comments as $comment) {
             if ($comment->user->id != $user->id && $post->user->id != $comment->user->id) {
                 $for = $comment->user->email;

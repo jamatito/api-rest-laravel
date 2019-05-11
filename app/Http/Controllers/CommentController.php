@@ -38,6 +38,7 @@ class CommentController extends Controller
             //limpiamos los datos
             $validate = \Validator::make($params_array, [
                 'content' => 'required',
+                'name' => 'required',
                 'user_id' => 'required',
                 'post_id' => 'required',
                 'approved' => 'required'
@@ -53,13 +54,14 @@ class CommentController extends Controller
             } else {
                 Comment::create([
                     'content' => $params_array['content'],
+                    'name' => $params_array['name'],
                     'user_id' => $params_array['user_id'],
                     'post_id' => $params_array['post_id'],
                     'approved' => $params_array['approved']
                 ]);
 
-                $ehelper->postCreator($params_array['user_id'],$params_array['post_id'],$params_array['content']);
-                $ehelper->postAnidate($params_array['user_id'],$params_array['post_id'],$params_array['content']);
+                $ehelper->postCreator($params_array['user_id'],$params_array['post_id'],$params_array['content'],$params_array['name']);
+                $ehelper->postAnidate($params_array['user_id'],$params_array['post_id'],$params_array['content'],$params_array['name']);
 
                 $data = array(
                     'status' => 'success',
@@ -109,6 +111,7 @@ class CommentController extends Controller
 
             $validate = \Validator::make($params_array, [
                 'content' => 'required',
+                'name' => 'required',
                 'user_id' => 'required',
                 'post_id' => 'required',
                 'approved' => 'required'
