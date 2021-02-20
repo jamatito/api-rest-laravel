@@ -30,7 +30,12 @@ Route::group(['middleware' => 'cors'], function () {
 
     Route::apiResource('category', 'CategoryController');
 
+
+
     Route::apiResource('post', 'PostController');
+
+
+
     Route::post('/post/upload', 'PostController@upload');
     Route::get('/post/getimage/{filename}', 'PostController@getImage');
 

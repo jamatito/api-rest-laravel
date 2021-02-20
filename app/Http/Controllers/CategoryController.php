@@ -65,7 +65,7 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::find($id);
+        $category = Category::find($id)->load('post');
 
         if (is_object($category)) {
             $data = array(
